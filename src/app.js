@@ -2,32 +2,83 @@ const express = require("express");
 
 const app = express(); //new webserver is created
 
+// const rh1 = (req, res, next) => {
+//     console.log("Routing handeled by route handler 1");
+//     //res.send("response from route handler 1");
+//     next();
+
+// }
+
+// const rh2 = (req, res, next) => {
+//     console.log("outing hndeled by route handler 2");
+//     //res.send("response from route handler 2");
+//     next();
+
+// }
+
+// const rh3 = (req, res, next) => {
+//     console.log("outing hndeled by route handler 3");
+//     // res.send("response from route handler 3");
+//     next();
+
+// }
+
+// const rh4 = (req, res, next) => {
+//     console.log("outing hndeled by route handler 4");
+//     //res.send("response from route handler 4");
+//     next();
+
+// }
+
+// const rh5 = (req, res, next) => {
+//     console.log("outing hndeled by route handler 5");
+//     res.send("response from route handler 5");
+
+
+// }
+
+// app.use("/user", [rh1, rh2, rh3, rh4, rh5]);
 
 
 
-//app.use will match all HHTP method call test
-app.use("/test", (req, res) => {
-    res.send("hello from the server using nodemon npx - test page");
-})
+app.use("/user", [(req, res, next) => {
+        console.log("Routing handeled by route handler 1");
+        //res.send("response from route handler 1");
+        next();
 
-app.get("/user", (req, res) => {
-    res.send({
-        firstname: "Arahanth",
-        lastname: "M"
-    })
-})
+    },
+    (req, res, next) => {
+        console.log("Routing handeled by route handler 2");
+        //res.send("response from route handler 2");
+        next();
+    },
+    (req, res, next) => {
+        console.log("Routing handeled by route handler 3");
+        //res.send("response from route handler 3");
+        next();
+    },
+    (req, res, next) => {
+        console.log("Routing handeled by route handler 4");
+        res.send("response from route handler 4");
+        // next();
+    },
+    (req, res, next) => {
+        console.log("Routing handeled by route handler 5");
+        res.send("response from route handler 5");
 
-app.post("/user", (req, res) => {
-    console.log("save the data in the database");
-    res.send("database successfully updated");
+    }
+]);
 
-})
 
-app.delete("/user", (req, res) => {
-    //console.log("save the data in the database");
-    res.send("user deleted successfully");
+// the array that we ave used can be used or not used or used between any function s , anything u can do is fine 
 
-})
+
+
+
+
+
+
+
 
 
 app.listen(3000, () => {
