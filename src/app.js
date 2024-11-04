@@ -1,97 +1,42 @@
 const express = require("express");
+const {
+    adminAuth,
+    userAuth
+} = require("./middleware");
 
 const app = express(); //new webserver is created
 
-const rh1 = (req, res, next) => {
-    console.log("Routing handeled by route handler 1");
-    //res.send("response from route handler 1");
-    next();
+app.use("/admin", adminAuth);
 
-}
-
-const rh2 = (req, res, next) => {
-    console.log("outing hndeled by route handler 2");
-    //res.send("response from route handler 2");
-    next();
-
-}
-
-const rh3 = (req, res, next) => {
-    console.log("outing hndeled by route handler 3");
-    // res.send("response from route handler 3");
-    next();
-
-}
-
-const rh4 = (req, res, next) => {
-    console.log("outing hndeled by route handler 4");
-    //res.send("response from route handler 4");
-    next();
-
-}
-
-const rh5 = (req, res, next) => {
-    console.log("outing hndeled by route handler 5");
-    res.send("response from route handler 5");
+app.use("/user/login", (req, res) => {
+    console.log("user login page");
+    res.send("login page is open");
+})
+app.use("/user", userAuth);
 
 
-}
+app.use("/admin/getAllData", (req, res) => {
+    console.log("all the data has been sahred with the admin");
+    res.send("The admin is authorized and here is the data");
+})
 
-app.use("/user", [rh1, rh2, rh3, rh4, rh5]);
+app.use("/admin/check", (req, res) => {
+    console.log("the admin can check all the activities now");
+    res.send("here is all the activities happening");
+
+})
 
 
 
-app.use("/user", [(req, res, next) => {
-        console.log("Routing handeled by route handler 1");
-        //res.send("response from route handler 1");
-        next();
 
-    },
-    (req, res, next) => {
-        console.log("Routing handeled by route handler 2");
-        //res.send("response from route handler 2");
-        next();
-    },
-    (req, res, next) => {
-        console.log("Routing handeled by route handler 3");
-        //res.send("response from route handler 3");
-        next();
-    },
-    (req, res, next) => {
-        console.log("Routing handeled by route handler 4");
-        res.send("response from route handler 4");
-        next();
-    },
-    (req, res, next) => {
-        console.log("Routing handeled by route handler 5");
-        // res.send("response from route handler 5");
-
-    }
+app.use("/user/profile", (req, res) => {
+    console.log("this is the user profile");
+    res.send("User login page");
+})
 
 
-]);
-
-//this is also  avalid syntax , all the middle fucntions tah tdo not actually respond and lead to other function are known as middle wares
-//the function that actually reply with the rsponse are called as request handlers
-
-app.use("/", (req, res, next) => {
-    console.log("handeled by / router");
-    next();
-});
-
-app.use("/user", (req, res, next) => {
-        console.log("handeled by the /user router 1");
-        //res.send("response from router 2");
-        next();
-    },
-    (req, res, next) => {
-        console.log("handeled by the /user router 2");
-        res.send("response from the router 3");
-        next();
-    })
 
 
-// the array that we ave used can be used or not used or used between any function s , anything u can do is fine 
 
 
 
