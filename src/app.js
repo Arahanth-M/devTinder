@@ -1,50 +1,24 @@
 const express = require("express");
-const {
-    adminAuth,
-    userAuth
-} = require("./middleware");
 
-const app = express(); //new webserver is created
-
-app.use("/admin", adminAuth);
-
-app.use("/user/login", (req, res) => {
-    console.log("user login page");
-    res.send("login page is open");
-})
-app.use("/user", userAuth);
+app = new express();
 
 
-app.use("/admin/getAllData", (req, res) => {
-    console.log("all the data has been sahred with the admin");
-    res.send("The admin is authorized and here is the data");
+app.use("/user/data", (req, res, next) => {
+    try {
+        console.log("user data is there");
+        throw new Error("error occured");
+        res.send("data of user");
+    } catch (err) {
+        res.status(500).send("error occured , please contact the dev team");
+    }
 })
 
-app.use("/admin/check", (req, res) => {
-    console.log("the admin can check all the activities now");
-    res.send("here is all the activities happening");
-
+app.use("/", (err, req, res, next) => {
+    if (err) {
+        console.log("error occured please check");
+        res.send("Found error");
+    }
 })
-
-
-
-
-app.use("/user/profile", (req, res) => {
-    console.log("this is the user profile");
-    res.send("User login page");
-})
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 app.listen(3000, () => {
