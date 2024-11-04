@@ -5,7 +5,7 @@ const {
 
 
 
-const User = require("./model/user");
+const User = require("./models/user");
 
 app = express();
 
