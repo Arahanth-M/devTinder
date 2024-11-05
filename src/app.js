@@ -9,19 +9,21 @@ const User = require("./models/user");
 
 app = express();
 
+app.use(express.json()); //middle ware used to convert the JSON format to JS object , so that it is in user readable form 
+
 app.post("/signup", async (req, res) => {
+    console.log(req.body);
+    const user = new User(req.body);
     try {
-        const user = new User({
-            firstName: "Arahanth",
-            lastName: "M",
-            email: "ari@gmail.com",
-            password: "1234",
-        });
+
         await user.save();
-        res.status(201).send("User signed up successfully");
+        res.send("user data updated successfully");
     } catch (err) {
-        res.status(500).send("An error occurred while signing up");
+        console.log("error occured");
+        res.status(404).send("could not recieve the data");
     }
+
+
 });
 
 connectDB().then(() => {
