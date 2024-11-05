@@ -26,6 +26,45 @@ app.post("/signup", async (req, res) => {
 
 });
 
+app.get("/user", async (req, res) => {
+    const userEmail = req.body.email;
+    try {
+        const users = await User.find({
+            email: userEmail
+        }); //this returns an array of all the users
+        if (users.length === 0)
+            res.status(404).send("User not found");
+        else {
+            res.send(users);
+        }
+
+
+    } catch (err) {
+        res.send("An unknown error occured");
+    }
+
+
+
+})
+
+app.get("/feed", async (req, res) => {
+    try {
+        const users = await User.find({});
+        if (users.length === 0)
+            res.status(404).send("no users found");
+        else {
+            res.send(users);
+        }
+
+    } catch (err) {
+        res.send("An unknown error occured");
+    }
+
+
+
+
+})
+
 connectDB().then(() => {
     console.log("connected to the database");
     app.listen(3000, () => {
