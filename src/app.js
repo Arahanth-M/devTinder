@@ -3,6 +3,12 @@ const {
     connectDB
 } = require("./config/database"); //including our database module... from the config folder
 
+const {
+    validateUserData
+} = require("./utils/validation");
+const validator = require("validator");
+const bcrypt = require("bcrypt");
+
 
 
 const User = require("./models/user"); // we have created a schema , then a model of user dataabase , we are trying to import it here
@@ -14,9 +20,28 @@ app.use(express.json()); //middle ware used to convert the JSON format to JS obj
 
 
 app.post("/signup", async (req, res) => {
-    console.log(req.body);
-    const user = new User(req.body);
+    //using direct req.body is a bad thing , so first we should validate the user credentials
+    //validating the user data
     try {
+        validateUserData(req);
+        const {
+            firstName,
+            lastName,
+            email,
+            password
+        } = req.body;
+
+        //encrypting the password
+        const encryptedPssword = await bcrypt.hash(password, 10); //here 10 represents th number of salt rounds required to encrypt and store the entered password
+
+        const user = new User({
+            firstName,
+            lastName,
+            email,
+            password: encryptedPssword,
+
+        });
+
 
         await user.save();
         res.send("user data added successfully");
@@ -28,15 +53,7 @@ app.post("/signup", async (req, res) => {
 
 });
 
-// app.post("/user", async (req, res) => {
-//     const user = new User(req.body);
-//     try {
-//         await user.save();
-//         res.send("user data updated successfully");
-//     } catch (err) {
-//         req.status(404).send("some unknown error occured");
-//     }
-// })
+
 
 app.get("/user", async (req, res) => {
     const userEmail = req.body.email;
