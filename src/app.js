@@ -19,7 +19,7 @@ app.post("/signup", async (req, res) => {
     try {
 
         await user.save();
-        res.send("user data updated successfully");
+        res.send("user data added successfully");
     } catch (err) {
         console.log("error occured");
         res.status(404).send(err.message);
@@ -103,10 +103,24 @@ app.get("/feed", async (req, res) => {
 
 })
 
-app.patch("/user", async (req, res) => {
-    const userId = req.body.userId;
+//API level validation 
+app.patch("/user/:userId", async (req, res) => {
+    const userId = req.params.userId
     const data = req.body;
+
     try {
+        const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
+        const isUpdateAllowed = Object.keys(data).every((k) =>
+            ALLOWED_UPDATES.includes(k)
+        );
+        if (!isUpdateAllowed) {
+            throw new Error("update not allowed");
+        }
+        //it is always better to add a question mark before the dot oepration , but my VS is not supporting , just check this out when time persists....
+        if (data.skills.length > 10) {
+            throw new Error("No more than 10 skills can be added");
+        }
+
         const user = await User.findByIdAndUpdate({
                 _id: userId
             },
