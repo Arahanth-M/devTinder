@@ -8,7 +8,11 @@ const {
 } = require("./utils/validation");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-
+const cookieParser = require("cookie-parser");
+const jwt = require("jsonwebtoken");
+const {
+    userAuth
+} = require("./middlewares/auth");
 
 
 const User = require("./models/user"); // we have created a schema , then a model of user dataabase , we are trying to import it here
@@ -17,7 +21,7 @@ const User = require("./models/user"); // we have created a schema , then a mode
 app = express();
 
 app.use(express.json()); //middle ware used to convert the JSON format to JS object , so that it is in user readable form and fetch only the required data to the server
-
+app.use(cookieParser());
 
 app.post("/signup", async (req, res) => {
     //using direct req.body is a bad thing , so first we should validate the user credentials
@@ -29,7 +33,7 @@ app.post("/signup", async (req, res) => {
             lastName,
             email,
             password
-        } = req.body;
+        } = req.body; //destructing all the data recieved... good industry practices
 
         //encrypting the password
         const encryptedPssword = await bcrypt.hash(password, 10); //here 10 represents th number of salt rounds required to encrypt and store the entered password
@@ -53,6 +57,33 @@ app.post("/signup", async (req, res) => {
 
 });
 
+app.post("/login", async (req, res) => {
+    try {
+        const {
+            email,
+            password
+        } = req.body;
+        const user = await User.findOne({
+            email: email
+        });
+        if (!user) {
+            throw new Error("Email Id is not valid in DB");
+        }
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (isPasswordValid) {
+            res.send("login successful");
+        } else {
+            throw new Error("password is not correct");
+        }
+
+    } catch (err) {
+        res.status(404).send("ERROR : " + err.message);
+    }
+
+
+
+
+});
 
 
 app.get("/user", async (req, res) => {
