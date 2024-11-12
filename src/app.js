@@ -73,7 +73,7 @@ app.post("/login", async (req, res) => {
         if (!user) {
             throw new Error("Email Id is not valid in DB");
         }
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await user.validatePassword(password);
 
         if (isPasswordValid) {
             //the first parameter is the data that is needed to be hidded...
@@ -81,9 +81,7 @@ app.post("/login", async (req, res) => {
             //the user id is hidden inside the JWT tokena dn the server gets to know who has logged inside and send the encrypted form of the suer id in the JWT toke..
             //thats why if the cookie gets leaked , the hacker gets access to all API of the user and the private information can be accessed by the hacker...
 
-            const token = await jwt.sign({
-                _id: user._id
-            }, "dev@Tinder70");
+            const token = await user.getJWT();
             res.cookie("token", token);
             res.send("login successful");
         } else {
