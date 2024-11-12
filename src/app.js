@@ -27,7 +27,7 @@ app.post("/signup", async (req, res) => {
     //using direct req.body is a bad thing , so first we should validate the user credentials
     //validating the user data
     try {
-        validateUserData(req);
+
         const {
             firstName,
             lastName,
@@ -51,7 +51,7 @@ app.post("/signup", async (req, res) => {
         res.send("user data added successfully");
     } catch (err) {
         console.log("error occured");
-        res.status(404).send(err.message);
+        res.status(400).send(err.message);
     }
 
 
@@ -66,11 +66,25 @@ app.post("/login", async (req, res) => {
         const user = await User.findOne({
             email: email
         });
+
+
+
+
         if (!user) {
             throw new Error("Email Id is not valid in DB");
         }
         const isPasswordValid = await bcrypt.compare(password, user.password);
+
         if (isPasswordValid) {
+            //the first parameter is the data that is needed to be hidded...
+            //the second parameter is the secret key that only the server knows...
+            //the user id is hidden inside the JWT tokena dn the server gets to know who has logged inside and send the encrypted form of the suer id in the JWT toke..
+            //thats why if the cookie gets leaked , the hacker gets access to all API of the user and the private information can be accessed by the hacker...
+
+            const token = await jwt.sign({
+                _id: user._id
+            }, "dev@Tinder70");
+            res.cookie("token", token);
             res.send("login successful");
         } else {
             throw new Error("password is not correct");
@@ -85,106 +99,23 @@ app.post("/login", async (req, res) => {
 
 });
 
-
-app.get("/user", async (req, res) => {
-    const userEmail = req.body.email;
+app.get("/profile", userAuth, async (req, res) => {
     try {
-        const users = await User.find({
-            email: userEmail
-        }); //this returns an array of all the users
-        if (users.length === 0)
-            res.status(404).send("User not found");
-        else {
-            res.send(users);
-        }
 
-
+        const user = req.user;
+        console.log("the user logged in is: " + user.firstName);
+        res.send(user);
     } catch (err) {
-        res.send("An unknown error occured");
-    }
-
-
-
-})
-
-app.delete("/delete", async (req, res) => {
-    const userEmail = req.body.email;
-    try {
-        await User.deleteOne({
-            email: userEmail
-        });
-        res.send("user deleted successfully");
-
-
-    } catch (err) {
-        res.status(404).send("some error occured");
-    }
-})
-//using findByIdAnddelete() method
-app.delete("/user", async (req, res) => {
-    const userid = req.body.userId;
-    try {
-        await User.findByIdAndDelete({
-            userId: userid
-        })
-        res.send("user successfully deleted using id");
-    } catch (err) {
-        res.send("some unknown error occured");
+        console.log("ERROR: " + err.message);
     }
 })
 
-app.get("/feed", async (req, res) => {
-    try {
-        const users = await User.find({});
-        if (users.length === 0)
-            res.status(404).send("no users found");
-        else {
-            res.send(users);
-        }
+app.post("/connectionRequest", userAuth, async (req, res) => {
+    console.log("sending connection request");
 
-    } catch (err) {
-        res.send("An unknown error occured");
-    }
-
-
-
-
+    res.send("the connection request is sent by : " + req.user.firstName);
 })
 
-//API level validation 
-app.patch("/user/:userId", async (req, res) => {
-    const userId = req.params.userId
-    const data = req.body;
-
-    try {
-        const ALLOWED_UPDATES = ["photoUrl", "about", "gender", "age", "skills"];
-        const isUpdateAllowed = Object.keys(data).every((k) =>
-            ALLOWED_UPDATES.includes(k)
-        );
-        if (!isUpdateAllowed) {
-            throw new Error("update not allowed");
-        }
-        //it is always better to add a question mark before the dot oepration , but my VS is not supporting , just check this out when time persists....
-        if (data.skills.length > 10) {
-            throw new Error("No more than 10 skills can be added");
-        }
-
-        const user = await User.findByIdAndUpdate({
-                _id: userId
-            },
-            data, {
-                returnDocument: "after",
-                runValidators: true,
-            }
-        );
-        console.log(user);
-        res.send("User data updated successfully");
-    } catch (err) {
-        res.status(404).send("some unknown err occured" + err);
-    }
-
-
-})
 
 
 
