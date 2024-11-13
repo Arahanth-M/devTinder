@@ -7,6 +7,8 @@ const {
     validateEditProfileData
 } = require("../utils/validation");
 
+const bcrypt = require("bcrypt");
+
 profileRouter.get("/profile/view", userAuth, async (req, res) => {
     try {
 
@@ -37,5 +39,41 @@ profileRouter.patch("/profile/edit", userAuth, async (req, res) => {
     }
 
 })
+
+profileRouter.patch("/profile/password", userAuth, async (req, res) => {
+    try {
+        const {
+
+            currentPassword,
+            newPassword
+        } = req.body;
+
+        // Ensure user exists
+        const user = req.user; //passed by the userAuth middleware
+
+        if (!user) {
+            return res.status(404).send("User does not exist, please create a new account.");
+        }
+
+        // Compare the current password with the one stored in the database
+        const isMatch = await bcrypt.compare(currentPassword, user.password);
+        if (!isMatch) {
+            return res.status(400).send("The current password is incorrect.");
+        }
+
+        // Hash the new password and update it
+        const encryptedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = encryptedPassword;
+        await user.save();
+
+        // Respond to the client
+        res.json({
+            message: `Password updated successfully.`,
+            data: user
+        });
+    } catch (err) {
+        res.status(500).send("ERROR: " + err.message);
+    }
+});
 
 module.exports = profileRouter;

@@ -20,6 +20,9 @@ function validateUserData(req) {
 
 function validateEditProfileData(req) {
     const allowedEditFields = ["firstName", "lastName", "age", "photoUrl", "gender", "about", "skills"];
+    //what this line of code is doing here is that it is checking each key value which is present in the req.body
+    //.every(field...)here field will contain all the key value sin the req.body nad chcks whether the filed value are part of the allowedEditFields
+    //Object.keys(req.body) will return an array of key values in th req.body
     const isEditAllowed = Object.keys(req.body).every(field => allowedEditFields.includes(field));
     return isEditAllowed;
 }
