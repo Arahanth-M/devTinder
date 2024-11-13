@@ -4,8 +4,6 @@ const {
 } = require("./config/database"); //including our database module... from the config folder
 
 app = express();
-const validator = require("validator");
-const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
 
@@ -20,12 +18,6 @@ const profileRouter = require("./routes/request");
 app.use("/", authRouter);
 app.use("/", requestRouter);
 app.use("/", profileRouter);
-
-
-
-
-
-
 
 
 

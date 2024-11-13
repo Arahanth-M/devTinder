@@ -67,12 +67,12 @@ profileRouter.patch("/profile/password", userAuth, async (req, res) => {
         await user.save();
 
         // Respond to the client
-        res.json({
+        return res.json({
             message: `Password updated successfully.`,
             data: user
         });
     } catch (err) {
-        res.status(500).send("ERROR: " + err.message);
+        return res.status(500).send("ERROR: " + err.message);
     }
 });
 
