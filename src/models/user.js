@@ -28,7 +28,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         lowercase: true,
         required: true,
-        unique: true,
+        unique: true, //if a parameter is made unique , then automatically index is added on that parameter
         index: true,
         trim: true,
         validate(value) {
