@@ -2,7 +2,7 @@ const express = require("express");
 const {
     validateUserData
 } = require("../utils/validation");
-const User = require("../models/user"); // we have created a schema , then a model of user dataabase , we are trying to import it here
+const User = require("../models/user"); // we have created a schema , then a model of user database , we are trying to import it here
 const bcrypt = require("bcrypt");
 
 const authRouter = express.Router();
@@ -24,6 +24,8 @@ authRouter.post("/signup", async (req, res) => {
         //encrypting the password
         const encryptedPssword = await bcrypt.hash(password, 10); //here 10 represents th number of salt rounds required to encrypt and store the entered password
 
+        //creating a new document in the mongoDB 
+        //instead of storing the actual password , we are saving the encrypted password in the DB ... 
         const user = new User({
             firstName,
             lastName,
@@ -32,6 +34,7 @@ authRouter.post("/signup", async (req, res) => {
 
         });
 
+        //saving the document in the database...
 
         await user.save();
         res.send("user data added successfully");
@@ -83,6 +86,7 @@ authRouter.post("/login", async (req, res) => {
 
 });
 
+//expiring the cookie immediatley so that the validation is not possible without the cookie , so this simulates the actual logout of the user
 authRouter.post("/logout", async (req, res) => {
     res.cookie("token", null, {
         expires: new Date(Date.now())
