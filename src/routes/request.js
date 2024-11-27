@@ -85,8 +85,8 @@ requestRouter.post("/request/review/:status/:requestId", userAuth, async (req, r
                 message: "Connection request not found"
             });
         }
-        ConnectionRequest.status = status;
-        const data = await ConnectionRequest.save();
+        connectionRequest.status = status;
+        const data = await connectionRequest.save();
         res.json({
             message: "The connection was " + status,
             data
