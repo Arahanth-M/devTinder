@@ -6,9 +6,12 @@ const {
 app = express();
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const cors = require("cors");
 
+app.use(cors());
 app.use(express.json()); //middle ware used to convert the JSON format to JS object , so that it is in user readable form and fetch only the required data to the server
 app.use(cookieParser());
+
 
 
 const authRouter = require("./routes/auth");
